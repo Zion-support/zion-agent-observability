@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Zion Agent Observability Scorecard</title>
+<meta name="description" content="Maturity checklist for AI agent observability: tracing, evals-in-CI, cost alerts, guardrails. Free tool by Zion Tech Group.">
+<style>
+:root{--bg:#0b0f14;--card:#131c26;--acc:#38bdf8;--txt:#e8f0f8;--mut:#93a4b8}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--txt)}
+header{padding:48px 24px 24px;text-align:center;background:linear-gradient(160deg,#0e2a40,#0b0f14)}
+h1{margin:0 0 8px}.wrap{max-width:860px;margin:0 auto;padding:24px}
+.cat{margin:24px 0 8px;color:var(--acc);font-weight:600;text-transform:uppercase;font-size:.8rem;letter-spacing:.06em}
+.item{display:flex;gap:12px;background:var(--card);border:1px solid #1e2f42;border-radius:12px;padding:14px;margin:8px 0;align-items:center}
+.item input{width:20px;height:20px;accent-color:var(--acc)}
+.score{position:sticky;bottom:16px;background:#0f2233;border:1px solid #1e4562;border-radius:14px;padding:16px;text-align:center;font-size:1.2rem;margin-top:24px}
+.bar{height:10px;background:#0a141d;border-radius:6px;margin-top:8px;overflow:hidden}.bar>div{height:100%;background:var(--acc);width:0;transition:width .3s}
+.lvl{color:var(--mut);font-size:.9rem}
+footer{padding:32px 24px;text-align:center;color:var(--mut);font-size:.85rem;border-top:1px solid #18232f;margin-top:40px}
+footer a{color:var(--acc);text-decoration:none;margin:0 8px}
+</style>
+</head>
+<body>
+<header><h1>🔭 Zion Agent Observability Scorecard</h1>
+<p>How observable are your AI agents? Check what's implemented across 5 pillars and get a maturity level (0–4).</p></header>
+<div class="wrap" id="app"></div>
+<footer>Part of the <a href="https://ziontechgroup.com">Zion Tech Group</a> AI apps network ·
+<a href="https://ziontechgroup.com/zion-mcp-security/">MCP Security</a>
+<a href="https://ziontechgroup.com/zion-ai-postmortem/">AI Postmortem</a>
+<a href="https://ziontechgroup.com/zion-ai-finops-optimizer/">AI FinOps</a>
+<a href="https://ziontechgroup.com/ai-observability-platform/">Zion observability services</a></footer>
+<script>
+const C={
+'Tracing & telemetry':['OpenTelemetry/GenAI spans on every agent run','Tool calls logged with inputs/outputs (redacted)','Token usage per step tracked','Traces searchable by user/session/correlation ID'],
+'Quality evals':['Golden eval set exists and runs in CI','LLM-judge or human review sampling in production','Regression alerts wired to deploy pipeline','Per-prompt/model version score history'],
+'Cost & latency':['Cost per request/agent-run visible in dashboard','Budget alerts per project/tenant','p50/p95/p99 latency SLOs defined and monitored','Cache hit-rate tracked'],
+'Failures & incidents':['Agent failure taxonomy defined (tool error, hallucination, loop, timeout)','Automated detection of loops/runaway tool calls','Incident runbook exists (try our AI Postmortem Generator)','Blameless postmortem practice for SEV1/2'],
+'Security & guardrails':['Prompt-injection defenses tested regularly','Output filtering/PII redaction in pipeline','Tool permission scoping audited (see MCP Security Checklist)','Kill switch / circuit breaker for agents']};
+const app=document.getElementById('app');let html='';
+for(const[cat,items]of Object.entries(C)){html+=`<div class="cat">${cat}</div>`+items.map(t=>`<label class="item"><input type="checkbox"><span>${t}</span></label>`).join('');}
+html+=`<div class="score"><div>Maturity: <b id="pct">0%</b> <span class="lvl" id="lvl"></span></div><div class="bar"><div id="fill"></div></div></div>`;
+app.innerHTML=html;
+const LV=[[90,'Level 4 — Managed & optimized'],[70,'Level 3 — Measured'],[50,'Level 2 — Instrumented'],[25,'Level 1 — Basic logging'],[0,'Level 0 — Flying blind']];
+app.addEventListener('change',()=>{const b=[...app.querySelectorAll('input')];const p=Math.round(b.filter(x=>x.checked).length/b.length*100);
+document.getElementById('pct').textContent=p+'%';document.getElementById('fill').style.width=p+'%';
+document.getElementById('lvl').textContent='— '+LV.find(l=>p>=l[0])[1];});
+</script>
+</body>
+</html>
